@@ -1,0 +1,84 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.Random;
+import java.util.Scanner;
+
+public class Telephone {
+	Connection con = null;
+
+	private void insertContactWithStatement(Connection con) {
+		Statement st = null;
+		String[] cates = { "friend", "family", "coworker", "etc" };
+		Random rand = new Random();
+		int totcnt = 10000;
+		try {
+			st = con.createStatement();
+
+			for (int i = 1; i <= totcnt; i++) {
+				String name = "name" + i;
+				String cate = cates[rand.nextInt(4)];
+				String addr = "addr" + i;
+				String company = "company" + i;
+				String birth = String.format("%4d-%02d-%02d", rand.nextInt(1950, 2022), rand.nextInt(1, 13),
+						rand.nextInt(1, 29));
+				String sql = String.format("insert into contact (cid, name, category, address, workplace, btd)"
+						+ "values(%d,'%s','%s','%s','%s','%s')", i, name, cate, addr, company, birth);
+				System.out.println(String.format("%.2f:%d/%d", i * 100 / (double) totcnt, i, totcnt));
+				st.executeUpdate(sql);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void insertData(int cid, int Seq, String number, String type) {
+		String sql = "insert into phone(cid,Seq,number,type) values (?,?,?,?)";
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, cid);
+			ps.setInt(2, Seq);
+			ps.setString(3, number);
+			ps.setString(4, type);
+			ps.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("데이터가 입력되었습니다");
+
+	}
+
+	private boolean connectDB() {
+		try {
+			Class.forName("org.h2.Driver");
+			con = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/telephone", "soctt", "tiger");
+			System.out.println("데이터베이스가 연결되었습니다.");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private void closeDB() {
+		try {
+			con.close();
+			System.out.println("데이터베이스가 닫혔습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		Telephone tp = new Telephone();
+
+		if (tp.connectDB()) {
+			
+			tp.insertContactWithStatement(tp.con);
+			tp.closeDB();
+		}
+	}
+}

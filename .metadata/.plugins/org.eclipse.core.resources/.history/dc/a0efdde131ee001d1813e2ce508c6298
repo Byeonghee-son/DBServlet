@@ -1,0 +1,107 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class QueryExe {
+	int num;
+	String text;
+
+	QueryExe(int num, String text) {
+		this.num = num;
+		this.text = text;
+	}
+
+	int getNum() {
+		return num;
+	}
+
+	String getText() {
+		return text;
+	}
+}
+
+public class Homework {
+	Statement st = null;
+	ResultSet rs = null;
+
+	private void exe01() {
+		try {
+			st = con.createStatement();
+			rs = st.executeQuery("Select jname from j where city = 'London'");
+			while (rs.next()) {
+				System.out.println(String.format("%s", rs.getString("jname")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (st != null)
+					st.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	Connection con = null;
+
+	private boolean connectDB() {
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/warehouse", "scott", "tiger");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private void closeDB() {
+		try {
+			con.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		Homework hw = new Homework();
+		ArrayList<QueryExe> list = new ArrayList<>();
+
+		list.add(new QueryExe(1, "London에 있는 프로젝트 이름을 찾아라."));
+
+		Scanner sc = new Scanner(System.in);
+		while (true) {
+
+			for (QueryExe qe : list) {
+				System.out.println(String.format("%d. %s", qe.getNum(), qe.getText()));
+			}
+
+			System.out.print("선택<0:exit>:");
+			int sel = sc.nextInt();
+			if (sel == 0)
+				break;
+
+			for (QueryExe qe : list) {
+				if (qe.getNum() == sel) { // 스위치 문, else if문, 등등~ //자신있으면 메인 빼고 static 없이 해보세용
+
+				}
+				if (hw.connectDB()) {
+					hw.exe01();
+					hw.closeDB();
+				}
+
+			}
+		}
+	}
+}

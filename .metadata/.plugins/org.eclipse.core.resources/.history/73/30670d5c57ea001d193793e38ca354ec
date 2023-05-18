@@ -1,0 +1,71 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.Scanner;
+
+public class Telephone {
+	Connection con = null;
+	Statement st = null;
+	
+	private void insertData(int cid, int Seq, String number, String type) {
+		String sql ="insert into phone(cid,Seq,number,type) values (?,?,?,?)";
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, cid);
+			ps.setInt(2, Seq);
+			ps.setString(3, number);
+			ps.setString(4, type);
+			ps.executeUpdate();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("데이터가 입력되었습니다");
+		
+	}
+	
+	private boolean connectDB() {
+		try {
+			Class.forName("org.h2.Driver");
+			con = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/telephone", "soctt", "tiger");
+			System.out.println("데이터베이스가 연결되었습니다.");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private void closeDB() {
+		try {
+			con.close();
+			System.out.println("데이터베이스가 닫혔습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		Telephone tp = new Telephone();
+
+		if (tp.connectDB()) {
+			while (true) {
+				System.out.println("cid를 입력하세요 : ");
+				int cid = sc.nextInt();
+				System.out.println("Seq를 입력하세요 : ");
+				int Seq = sc.nextInt();
+				System.out.println("number를 입력하세요 : ");
+				String number = sc.next();
+				System.out.println("type를 입력하세요 : ");
+				String type = sc.next();
+				tp.insertData(cid, Seq, number, type);
+				break;
+			} 
+			
+			tp.closeDB();
+		}
+	}
+}

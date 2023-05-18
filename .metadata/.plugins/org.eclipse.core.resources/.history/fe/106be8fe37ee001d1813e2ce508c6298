@@ -1,0 +1,252 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class QueryExe {
+	int num;
+	String text;
+
+	QueryExe(int num, String text) {
+		this.num = num;
+		this.text = text;
+	}
+
+	int getNum() {
+		return num;
+	}
+
+	String getText() {
+		return text;
+	}
+}
+
+public class Homework {
+	Connection con = null;
+	Statement st = null;
+	ResultSet rs = null;
+
+	private void exe01() {
+		try {
+			st = con.createStatement();
+			rs = st.executeQuery("Select jname from j where city = 'London'");
+			while (rs.next()) {
+				System.out.println(String.format("%s", rs.getString("jname")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (st != null)
+					st.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void exe02() {
+		try {
+			st = con.createStatement();
+			rs = st.executeQuery("Select sname from s,spj where s.sno = spj.sno and jno = 'j1'");
+			while (rs.next()) {
+				System.out.println(String.format("%s", rs.getString("sname")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (st != null)
+					st.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void exe03() {
+		try {
+			st = con.createStatement();
+			rs = st.executeQuery("Select sno,pno,qty from spj where 300 <= qty and qty <= 750");
+			while (rs.next()) {
+				System.out
+						.println(String.format("%s,%s,%d", rs.getString("sno"), rs.getString("pno"), rs.getInt("qty")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (st != null)
+					st.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	private void exe04() {
+		try {
+			st = con.createStatement();
+			rs = st.executeQuery("Select distinct city , color from p");
+			while (rs.next()) {
+				System.out
+						.println(String.format("%s,%s", rs.getString("city"), rs.getString("color")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (st != null)
+					st.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	private void exe05() {
+		try {
+			st = con.createStatement();
+			rs = st.executeQuery("select s.sno, p.pno, j.jno, s.city from s, p, j, spj where s.sno = spj.sno and p.pno = spj.pno and j.jno = spj.jno and s.city = p.city and p.city = j.city");
+			while (rs.next()) {
+				System.out
+				.println(String.format("%s,%s,%s,%s", rs.getString("sno"),rs.getString("pno"),rs.getString("jno"),rs.getString("city")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (st != null)
+					st.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void exe06() {
+		try {
+			st = con.createStatement();
+			rs = st.executeQuery("select s.sno, p.pno, j.jno, s.city from s, p, j, spj where s.sno = spj.sno and p.pno = spj.pno and j.jno = spj.jno and s.city <> p.city and p.city <> j.city");
+			while (rs.next()) {
+				System.out
+				.println(String.format("%s,%s,%s,%s", rs.getString("sno"),rs.getString("pno"),rs.getString("jno"),rs.getString("city")));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (st != null)
+					st.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	
+
+	private boolean connectDB() {
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/warehouse", "scott", "tiger");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private void closeDB() {
+		try {
+			con.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void executeQuery(int num) {
+		switch (num) {
+		case 1:
+			exe01();
+			break;
+		case 2:
+			exe02();
+			break;
+		case 3:
+			exe03();
+			break;
+		case 4:
+			exe04();
+			break;
+		case 5:
+			exe05();
+			break;
+		case 6:
+			exe06();
+			break;
+
+
+		default:
+			System.out.println("잘못된 선택입니다.");
+			break;
+		}
+	}
+
+	public static void main(String[] args) {
+		Homework hw = new Homework();
+		ArrayList<QueryExe> list = new ArrayList<>();
+
+		list.add(new QueryExe(1, "London에 있는 프로젝트 이름을 찾아라."));
+		list.add(new QueryExe(2, "프로젝트 j1에 참여하는 공급자의 이름을 찾아라."));
+		list.add(new QueryExe(3, "공급 수량이 300이상 750이하인 모든 공급의 sno,pno,qty를 찾아라."));
+		list.add(new QueryExe(4, "부품의 color와 city의 모든 쌍을 찾아라. 같은 쌍은 한번만 검색되어야 한다."));	
+		list.add(new QueryExe(5, "같은 도시에 있는 공급자, 부품, 프로젝트의 모든 sno,pno,jno쌍을 찾아라. 찾아진 sno,pno,jno의 city들은 모두 같아야한다"));	
+		list.add(new QueryExe(6, "같은 도시에 있는 않는 공급자, 부품, 프로젝트의 모든 sno,pno,jno쌍을 찾아라. 찾아진 sno,pno,jno의 city들은 같은것이 없어야 한다."));	
+
+		Scanner sc = new Scanner(System.in);
+		while (true) {
+
+			for (QueryExe qe : list) {
+				System.out.println(String.format("%d. %s", qe.getNum(), qe.getText()));
+			}
+
+			System.out.print("선택<0:exit>:");
+			int sel = sc.nextInt();
+			if (sel == 0)
+				break;
+
+			hw.connectDB();
+			hw.executeQuery(sel);
+			hw.closeDB();
+		}
+	}
+
+}

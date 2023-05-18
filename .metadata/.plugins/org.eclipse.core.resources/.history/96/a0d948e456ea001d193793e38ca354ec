@@ -1,0 +1,23 @@
+package sqlconnection;
+
+import java.util.Scanner;
+
+public class Telephone {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		Telephone tp = new Telephone();
+
+		if (connectDB()) {
+			while (true) {
+				System.out.println("cid를 입력하세요 : ");
+				int cid = sc.nextInt();
+				System.out.println("Seq를 입력하세요 : ");
+				int Seq = sc.nextInt();
+				System.out.println("number를 입력하세요 : ");
+				String number = sc.next();
+				System.out.println("type를 입력하세요 : ");
+				String type = sc.next();
+			}
+		}
+	}
+}

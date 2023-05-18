@@ -1,0 +1,16 @@
+package sqlconnection;
+
+public class sqlconnection2 {
+	Con
+	private static void insertDept(Connection con, String dno, Strinig dname, int budget) {
+		
+	}
+	public static void main(String[] args) {
+		Connection con = null;
+		Statement st = null;
+		
+		try {
+			Class.forName("")
+		}
+	}
+}

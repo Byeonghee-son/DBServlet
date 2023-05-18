@@ -1,0 +1,57 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+
+class QueryExe {
+	int num;
+	String text;
+
+	QueryExe(int num, String text) {
+		this.num = num;
+		this.text = text;
+	}
+
+	int getNum() {
+		return num;
+	}
+
+	String getText() {
+		return text;
+	}
+}
+
+public class Homework {
+	Connection con = null;
+	private boolean connectDB() {
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/warehouse", "scott", "tiger");
+			System.out.println("데이터베이스가 연결되었습니다.");
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	private void closeDB() {
+		try {
+			con.close();
+			System.out.println("데이터베이스가 닫혔습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public static void main(String[] args) {
+		Homework hw = new Homework();
+		if(hw.connectDB()) {
+			
+			hw.closeDB();
+		}
+		
+		
+	}
+}

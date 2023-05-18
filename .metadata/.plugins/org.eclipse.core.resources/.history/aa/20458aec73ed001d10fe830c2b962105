@@ -1,0 +1,77 @@
+package sqlconnection;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Random;
+
+public class Telephone_1 {
+	
+
+	private void insertContactWithPreparedStatement(int cid, int seq, String number, String type, Connection con) {
+		String sql = "insert into phone (cid, seq, number, type) values(?,?,?,?)";
+		try {
+			
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, cid);
+			ps.setInt(2, seq);
+			ps.setString(3, number);
+			ps.setString(4, type);
+			ps.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	private Connection connectDB() {
+		try {
+			Class.forName("org.h2.Driver");
+			Connection con = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/telephone", "soctt", "tiger");
+			System.out.println("데이터베이스가 연결되었습니다.");
+			return con;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private void closeDB(Connection con) {
+		try {
+			con.close();
+			System.out.println("데이터베이스가 닫혔습니다.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void main(String[] args) {
+		Telephone_1 tp = new Telephone_1();
+		Connection con = tp.connectDB();
+		Random rand = new Random();
+        int totcnt = 10000;
+        String[] cates = {"cellular", "home", "workplace", "fax", "etc"};
+        int current_cid = 1;
+        int current_seq = 1;
+        try {
+            for (int i = 1; i <= totcnt; i++) {
+                int cid = current_cid;
+                int seq = current_seq;
+                String number = String.format("010%08d", rand.nextInt(100000000));
+                String type = cates[rand.nextInt(5)];
+                tp.insertContactWithPreparedStatement(cid, seq, number, type, con);
+                System.out.println(String.format("%.2f:%d/%d", i * 100 / (double) totcnt, i, totcnt));
+                current_seq++;
+                if (current_seq > 10) {
+                    current_cid++;
+                    current_seq = 1;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            tp.closeDB(con);
+        }
+    }
+}
